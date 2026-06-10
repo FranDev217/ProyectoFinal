@@ -1,4 +1,4 @@
-package com.ProyectoFinal.Java;
+package com.ProyectoFinal;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
