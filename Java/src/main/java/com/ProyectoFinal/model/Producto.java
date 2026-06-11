@@ -27,15 +27,14 @@ public class Producto {
     @Column(name = "categoria", length = 100)
     private String categoria;
 
-    public Producto() {
-    }
-
-    public Producto(long id, String nombre, double precio, int stock, String categoria) {
-        this.id = id;
+    public Producto(String nombre, double precio, int stock, String categoria) {
         this.nombre = nombre;
         this.precio = precio;
         this.stock = stock;
         this.categoria = categoria;
+    }
+
+    public Producto() {
     }
 
     public long getId() {

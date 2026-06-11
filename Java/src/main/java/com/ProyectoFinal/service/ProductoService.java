@@ -1,30 +1,77 @@
 package com.ProyectoFinal.service;
 
-import java.util.ArrayList;
 import org.springframework.stereotype.Service;
-import java.util.List;
 
+import com.ProyectoFinal.exception.ProductoNoEncontradoException;
 import com.ProyectoFinal.model.Producto;
+import com.ProyectoFinal.repository.ProductoRepository;
+import java.util.List;
 
 @Service
 public class ProductoService {
 
-    private List<Producto> productos = new ArrayList<>();
+    // Inyección por constructor : Spring pasa el repositorio.
+    private final ProductoRepository repository;
 
-    // AGREGA ESTE CONSTRUCTOR DE PRUEBA:
-    public ProductoService() {
-        // Usamos los tipos que definiste: id (Long), nombre (String), precio (double)
-        // this.crearProducto(1L, "Coca Cola", 1500.0, 10);
-        // this.crearProducto(2L, "Papas Fritas", 2200.0, 5);
+    public ProductoService(ProductoRepository repository) {
+        this.repository = repository;
+    }
+
+    public Producto guardar(Producto p) {
+        if (p.getNombre() == null || p.getNombre().isBlank()) {
+            throw new IllegalArgumentException("El nombre del producto no puede ser nulo o vacío");
+        }
+        if (p.getPrecio() < 0) {
+            throw new IllegalArgumentException("El precio del producto no puede ser negativo");
+        }
+        if (p.getStock() < 0) {
+            throw new IllegalArgumentException("El stock del producto no puede ser negativo");
+        }
+        return repository.save(p);
     }
 
     public List<Producto> listarTodos() {
-        return productos;
+        return repository.findAll();
     }
 
-    public void crearProducto(Long id, String nombre, double precio, int stock, String categoria) {
-        Producto nuevoProducto = new Producto(id, nombre, precio, stock, categoria);
-        productos.add(nuevoProducto);
+    public Producto obtenerPorId(long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new ProductoNoEncontradoException("Producto no encontrado con ID: " + id));
+    }
+
+    public void eliminarPorId(long id) {
+        if (!repository.existsById(id)) {
+            throw new IllegalArgumentException("Producto no encontrado con ID: " + id);
+        }
+        repository.deleteById(id);
+    }
+
+    public Producto actualizar(long id, Producto p) {
+        Producto existente = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Producto no encontrado con ID: " + id));
+
+        if (p.getNombre() != null && !p.getNombre().isBlank()) {
+            existente.setNombre(p.getNombre());
+        }
+        if (p.getPrecio() <= 0) {
+            existente.setPrecio(p.getPrecio());
+        }
+        if (p.getStock() < 0) {
+            existente.setStock(p.getStock());
+        }
+        if (p.getCategoria() != null && !p.getCategoria().isBlank()) {
+            existente.setCategoria(p.getCategoria());
+        }
+
+        return repository.save(existente);
+    }
+
+    public List<Producto> buscarPorNombre(String nombre) {
+        return repository.findByNombreContaining(nombre);
+    }
+
+    public List<Producto> buscarPorCategoria(String categoria) {
+        return repository.buscarPorCategoria(categoria);
     }
 
 }
