@@ -1,11 +1,6 @@
 package com.ProyectoFinal.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "categoria")
@@ -24,8 +19,8 @@ public class Categoria {
     public Categoria() {
     }
 
-    public Categoria(long id, String nombre, String descripcion) {
-        this.id = id;
+    public Categoria(String nombre, String descripcion) {
+
         this.nombre = nombre;
         this.descripcion = descripcion;
     }

@@ -1,11 +1,6 @@
 package com.ProyectoFinal.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "producto")
@@ -24,10 +19,11 @@ public class Producto {
     @Column(name = "stock", nullable = false)
     private int stock;
 
-    @Column(name = "categoria", length = 100)
-    private String categoria;
+    @ManyToOne
+    @JoinColumn(name = "categoria_id")
+    private Categoria categoria;
 
-    public Producto(String nombre, double precio, int stock, String categoria) {
+    public Producto(String nombre, double precio, int stock, Categoria categoria) {
         this.nombre = nombre;
         this.precio = precio;
         this.stock = stock;
@@ -69,11 +65,18 @@ public class Producto {
         this.stock = stock;
     }
 
-    public String getCategoria() {
+    public Categoria getCategoria() {
         return categoria;
     }
 
-    public void setCategoria(String categoria) {
+    public void setCategoria(Categoria categoria) {
         this.categoria = categoria;
+    }
+
+    @Override
+    public String toString() {
+        String nombreCat = (categoria != null) ? categoria.getNombre() : "Sin categoría";
+        return "ID: " + id + " | " + nombre + " | $" + precio +
+                " | Stock: " + stock + " | Categoría: " + nombreCat;
     }
 }

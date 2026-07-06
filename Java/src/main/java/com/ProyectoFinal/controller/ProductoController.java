@@ -58,7 +58,7 @@ public class ProductoController {
 
     // PUT /productos/{id} — 200 OK si existe, 404 si no.
     @PutMapping("/{id}")
-    public ResponseEntity<Producto> actualizar(@PathVariable int id, @Valid @RequestBody Producto datos) {
+    public ResponseEntity<Producto> actualizar(@PathVariable long id, @Valid @RequestBody Producto datos) {
         try {
             return ResponseEntity.ok(service.actualizar(id, datos));
         } catch (ProductoNoEncontradoException e) {
@@ -68,7 +68,7 @@ public class ProductoController {
 
     // DELETE /productos/{id} — 200 OK si existe, 404 si no.
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable int id) {
+    public ResponseEntity<Void> eliminar(@PathVariable long id) {
         try {
             service.eliminarPorId(id);
             return ResponseEntity.ok().build();

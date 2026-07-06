@@ -55,13 +55,13 @@ public class ProductoService {
         if (p.getNombre() != null && !p.getNombre().isBlank()) {
             existente.setNombre(p.getNombre());
         }
-        if (p.getPrecio() <= 0) {
+        if (p.getPrecio() >= 0) {
             existente.setPrecio(p.getPrecio());
         }
-        if (p.getStock() < 0) {
+        if (p.getStock() >= 0) {
             existente.setStock(p.getStock());
         }
-        if (p.getCategoria() != null && !p.getCategoria().isBlank()) {
+        if (p.getCategoria() != null) {
             existente.setCategoria(p.getCategoria());
         }
 
