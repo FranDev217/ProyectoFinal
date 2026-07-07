@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ProyectoFinal.exception.CategoriaNoEncontradaException;
-import com.ProyectoFinal.exception.CategoriaNombreInvalidoException;
 import com.ProyectoFinal.model.Categoria;
 import com.ProyectoFinal.service.CategoriaService;
 
@@ -49,12 +48,9 @@ public class CategoriaController {
     // POST /categorias — 201 Created si es válida, 400 si el nombre está vacío.
     @PostMapping
     public ResponseEntity<Categoria> crearCategoria(@Valid @RequestBody Categoria nuevaCategoria) {
-        try {
-            Categoria creada = service.guardar(nuevaCategoria);
-            return ResponseEntity.status(HttpStatus.CREATED).body(creada);
-        } catch (CategoriaNombreInvalidoException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        Categoria creada = service.guardar(nuevaCategoria);
+        return ResponseEntity.status(HttpStatus.CREATED).body(creada);
+
     }
 
     // PUT /categorias/{id} — 200 OK si existe, 404 si no, 400 si nombre vacío.
@@ -64,8 +60,6 @@ public class CategoriaController {
             return ResponseEntity.ok(service.actualizar(id, datos));
         } catch (CategoriaNoEncontradaException e) {
             return ResponseEntity.notFound().build();
-        } catch (CategoriaNombreInvalidoException e) {
-            return ResponseEntity.badRequest().build();
         }
     }
 

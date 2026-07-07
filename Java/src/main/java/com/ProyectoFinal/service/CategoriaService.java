@@ -17,9 +17,6 @@ public class CategoriaService {
     }
 
     public Categoria guardar(Categoria c) {
-        if (c.getNombre() == null || c.getNombre().isBlank()) {
-            throw new IllegalArgumentException("El nombre de la categoría no puede ser nulo o vacío");
-        }
         return repository.save(c);
     }
 
@@ -43,10 +40,9 @@ public class CategoriaService {
         Categoria existente = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Categoría no encontrada con ID: " + id));
 
-        if (c.getNombre() != null && !c.getNombre().isBlank()) {
-            existente.setNombre(c.getNombre());
-            existente.setDescripcion(c.getDescripcion());
-        }
+        existente.setNombre(c.getNombre());
+        existente.setDescripcion(c.getDescripcion());
+
         return repository.save(existente);
     }
 

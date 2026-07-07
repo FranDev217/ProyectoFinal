@@ -2,9 +2,7 @@ package com.ProyectoFinal.service;
 
 import org.springframework.stereotype.Service;
 
-import com.ProyectoFinal.exception.PrecioInvalidoException;
 import com.ProyectoFinal.exception.ProductoNoEncontradoException;
-import com.ProyectoFinal.exception.StockInsuficienteException;
 import com.ProyectoFinal.model.Producto;
 import com.ProyectoFinal.repository.ProductoRepository;
 import java.util.List;
@@ -20,15 +18,6 @@ public class ProductoService {
     }
 
     public Producto guardar(Producto p) {
-        if (p.getNombre() == null || p.getNombre().isBlank()) {
-            throw new IllegalArgumentException("El nombre del producto no puede ser nulo o vacío");
-        }
-        if (p.getPrecio() < 0) {
-            throw new PrecioInvalidoException("El precio del producto no puede ser negativo");
-        }
-        if (p.getStock() < 0) {
-            throw new StockInsuficienteException("El stock del producto no puede ser negativo");
-        }
         return repository.save(p);
     }
 
@@ -52,18 +41,13 @@ public class ProductoService {
         Producto existente = repository.findById(id)
                 .orElseThrow(() -> new ProductoNoEncontradoException("Producto no encontrado con ID: " + id));
 
-        if (p.getNombre() != null && !p.getNombre().isBlank()) {
-            existente.setNombre(p.getNombre());
-        }
-        if (p.getPrecio() >= 0) {
-            existente.setPrecio(p.getPrecio());
-        }
-        if (p.getStock() >= 0) {
-            existente.setStock(p.getStock());
-        }
-        if (p.getCategoria() != null) {
-            existente.setCategoria(p.getCategoria());
-        }
+        existente.setNombre(p.getNombre());
+
+        existente.setPrecio(p.getPrecio());
+
+        existente.setStock(p.getStock());
+
+        existente.setCategoria(p.getCategoria());
 
         return repository.save(existente);
     }
