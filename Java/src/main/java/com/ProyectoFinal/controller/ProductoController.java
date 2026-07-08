@@ -17,6 +17,7 @@ import jakarta.validation.Valid;
 // @RequestMapping: define la URL base de todos los endpoints de esta clase.
 @RestController
 @RequestMapping("/productos")
+@CrossOrigin
 public class ProductoController {
 
     // Inyección por constructor: Spring crea el ProductoService y lo pasa.

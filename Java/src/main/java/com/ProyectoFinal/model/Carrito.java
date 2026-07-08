@@ -3,7 +3,13 @@ package com.ProyectoFinal.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "carrito")
@@ -13,15 +19,15 @@ public class Carrito {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    @JoinTable(name = "carrito_producto", joinColumns = @JoinColumn(name = "carrito_id"), inverseJoinColumns = @JoinColumn(name = "producto_id"))
-    private List<Producto> productos = new ArrayList<>();
+    @OneToMany(mappedBy = "carrito", cascade = { CascadeType.PERSIST, CascadeType.MERGE,
+            CascadeType.REMOVE }, orphanRemoval = true)
+    private List<CarritoProducto> items = new ArrayList<>();
 
     public Carrito() {
     }
 
-    public Carrito(List<Producto> productos) {
-        this.productos = productos != null ? productos : new ArrayList<>();
+    public Carrito(List<CarritoProducto> items) {
+        this.items = items != null ? items : new ArrayList<>();
     }
 
     public long getId() {
@@ -32,36 +38,46 @@ public class Carrito {
         this.id = id;
     }
 
-    public List<Producto> getProductos() {
-        return productos;
+    public List<CarritoProducto> getItems() {
+        return items;
     }
 
-    public void setProductos(List<Producto> productos) {
-        this.productos = productos != null ? productos : new ArrayList<>();
+    public void setItems(List<CarritoProducto> items) {
+        this.items = items != null ? items : new ArrayList<>();
     }
 
-    public void agregarProducto(Producto producto) {
-        if (producto != null) {
-            productos.add(producto);
+    public void agregarProducto(Producto producto, int cantidad) {
+        if (producto == null || cantidad <= 0) {
+            return;
         }
+
+        for (CarritoProducto item : items) {
+            if (item.getProducto().getId() == producto.getId()) {
+                item.setCantidad(item.getCantidad() + cantidad);
+                return;
+            }
+        }
+
+        CarritoProducto nuevoItem = new CarritoProducto(this, producto, cantidad);
+        items.add(nuevoItem);
     }
 
     public void eliminarProducto(Producto producto) {
-        productos.remove(producto);
+        items.removeIf(item -> item.getProducto().getId() == producto.getId());
     }
 
     public void vaciar() {
-        productos.clear();
+        items.clear();
     }
 
     public double calcularTotal() {
-        return productos.stream()
-                .mapToDouble(Producto::getPrecio)
+        return items.stream()
+                .mapToDouble(item -> item.getProducto().getPrecio() * item.getCantidad())
                 .sum();
     }
 
     @Override
     public String toString() {
-        return "Carrito ID: " + id + " | Productos: " + productos.size() + " | Total: $" + calcularTotal();
+        return "Carrito ID: " + id + " | Productos: " + items.size() + " | Total: $" + calcularTotal();
     }
 }

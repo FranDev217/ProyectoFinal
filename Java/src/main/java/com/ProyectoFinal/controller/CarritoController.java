@@ -4,11 +4,13 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ProyectoFinal.exception.ProductoNoEncontradoException;
@@ -17,6 +19,7 @@ import com.ProyectoFinal.service.CarritoService;
 
 @RestController
 @RequestMapping("/carritos")
+@CrossOrigin
 public class CarritoController {
 
     private final CarritoService service;
@@ -45,9 +48,12 @@ public class CarritoController {
     }
 
     @PostMapping("/{carritoId}/productos/{productoId}")
-    public ResponseEntity<Carrito> agregarProducto(@PathVariable long carritoId, @PathVariable long productoId) {
+    public ResponseEntity<Carrito> agregarProducto(
+            @PathVariable long carritoId,
+            @PathVariable long productoId,
+            @RequestParam(defaultValue = "1") int cantidad) {
         try {
-            return ResponseEntity.ok(service.agregarProducto(carritoId, productoId));
+            return ResponseEntity.ok(service.agregarProducto(carritoId, productoId, cantidad));
         } catch (ProductoNoEncontradoException e) {
             return ResponseEntity.notFound().build();
         } catch (IllegalArgumentException e) {

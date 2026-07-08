@@ -37,11 +37,15 @@ public class CarritoService {
     }
 
     public Carrito agregarProducto(long carritoId, long productoId) {
+        return agregarProducto(carritoId, productoId, 1);
+    }
+
+    public Carrito agregarProducto(long carritoId, long productoId, int cantidad) {
         Carrito carrito = obtenerPorId(carritoId);
         Producto producto = productoRepository.findById(productoId)
                 .orElseThrow(() -> new ProductoNoEncontradoException("Producto no encontrado con ID: " + productoId));
 
-        carrito.agregarProducto(producto);
+        carrito.agregarProducto(producto, cantidad);
         return carritoRepository.save(carrito);
     }
 

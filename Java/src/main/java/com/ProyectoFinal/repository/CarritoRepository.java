@@ -9,10 +9,10 @@ import com.ProyectoFinal.model.Carrito;
 
 public interface CarritoRepository extends JpaRepository<Carrito, Long> {
 
-    @Query("SELECT c FROM Carrito c LEFT JOIN FETCH c.productos WHERE c.id = :id")
+    @Query("SELECT c FROM Carrito c LEFT JOIN FETCH c.items i LEFT JOIN FETCH i.producto WHERE c.id = :id")
     Optional<Carrito> findByIdConProductos(long id);
 
-    @Query("SELECT DISTINCT c FROM Carrito c LEFT JOIN FETCH c.productos")
+    @Query("SELECT DISTINCT c FROM Carrito c LEFT JOIN FETCH c.items i LEFT JOIN FETCH i.producto")
     List<Carrito> findAllConProductos();
 }
 
