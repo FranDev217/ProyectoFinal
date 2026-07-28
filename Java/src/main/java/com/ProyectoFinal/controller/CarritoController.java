@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ProyectoFinal.dto.CarritoResponseDTO;
 import com.ProyectoFinal.exception.ProductoNoEncontradoException;
-import com.ProyectoFinal.model.Carrito;
 import com.ProyectoFinal.service.CarritoService;
 
 @RestController
@@ -29,12 +29,12 @@ public class CarritoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Carrito>> listarTodos() {
+    public ResponseEntity<List<CarritoResponseDTO>> listarTodos() {
         return ResponseEntity.ok(service.listarTodos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Carrito> obtenerCarrito(@PathVariable long id) {
+    public ResponseEntity<CarritoResponseDTO> obtenerCarrito(@PathVariable long id) {
         try {
             return ResponseEntity.ok(service.obtenerPorId(id));
         } catch (IllegalArgumentException e) {
@@ -43,12 +43,12 @@ public class CarritoController {
     }
 
     @PostMapping
-    public ResponseEntity<Carrito> crearCarrito() {
+    public ResponseEntity<CarritoResponseDTO> crearCarrito() {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.guardar());
     }
 
     @PostMapping("/{carritoId}/productos/{productoId}")
-    public ResponseEntity<Carrito> agregarProducto(
+    public ResponseEntity<CarritoResponseDTO> agregarProducto(
             @PathVariable long carritoId,
             @PathVariable long productoId,
             @RequestParam(defaultValue = "1") int cantidad) {
@@ -62,7 +62,7 @@ public class CarritoController {
     }
 
     @DeleteMapping("/{carritoId}/productos/{productoId}")
-    public ResponseEntity<Carrito> eliminarProducto(@PathVariable long carritoId, @PathVariable long productoId) {
+    public ResponseEntity<CarritoResponseDTO> eliminarProducto(@PathVariable long carritoId, @PathVariable long productoId) {
         try {
             return ResponseEntity.ok(service.eliminarProducto(carritoId, productoId));
         } catch (ProductoNoEncontradoException e) {

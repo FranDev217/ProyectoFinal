@@ -5,9 +5,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import com.ProyectoFinal.model.Producto;
+import com.ProyectoFinal.dto.CategoriaRequestDTO;
+import com.ProyectoFinal.dto.ProductoRequestDTO;
 import com.ProyectoFinal.service.ProductoService;
-import com.ProyectoFinal.model.Categoria;
 import com.ProyectoFinal.service.CategoriaService;
 
 @SpringBootApplication
@@ -17,22 +17,18 @@ public class JavaApplication {
 		SpringApplication.run(JavaApplication.class, args);
 	}
 
-	// Carga de datos iniciales para pruebas
 	@Bean
 	CommandLineRunner cargarDatos(ProductoService productoService, CategoriaService categoriaService) {
 		return args -> {
 			if (productoService.listarTodos().isEmpty()) {
-
-				Categoria almacen = categoriaService.guardar(new Categoria("Almacén", "Productos de almacén"));
-				Categoria bebidas = categoriaService.guardar(new Categoria("Bebidas", "Bebidas y líquidos"));
-				productoService.guardar(new Producto("Producto 1", 1500, 19, almacen));
-				productoService.guardar(new Producto("Producto 2", 2000, 5, almacen));
-				productoService.guardar(new Producto("Producto 3", 3200, 10, almacen));
-				productoService.guardar(new Producto("Producto 4", 4200, 15, almacen));
-				productoService.guardar(new Producto("Manaos", 2200, 15, bebidas));
+				var almacen = categoriaService.guardar(new CategoriaRequestDTO("Almacen", "Productos de almacen"));
+				var bebidas = categoriaService.guardar(new CategoriaRequestDTO("Bebidas", "Bebidas y liquidos"));
+				productoService.guardar(new ProductoRequestDTO("Producto 1", 1500, 19, almacen.id()));
+				productoService.guardar(new ProductoRequestDTO("Producto 2", 2000, 5, almacen.id()));
+				productoService.guardar(new ProductoRequestDTO("Producto 3", 3200, 10, almacen.id()));
+				productoService.guardar(new ProductoRequestDTO("Producto 4", 4200, 15, almacen.id()));
+				productoService.guardar(new ProductoRequestDTO("Manaos", 2200, 15, bebidas.id()));
 			}
 		};
-
 	}
-
 }

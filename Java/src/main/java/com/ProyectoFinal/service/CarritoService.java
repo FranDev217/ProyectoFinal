@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.ProyectoFinal.dto.CarritoResponseDTO;
 import com.ProyectoFinal.exception.ProductoNoEncontradoException;
 import com.ProyectoFinal.model.Carrito;
 import com.ProyectoFinal.model.Producto;
@@ -23,30 +24,37 @@ public class CarritoService {
         this.productoRepository = productoRepository;
     }
 
-    public Carrito guardar() {
-        return carritoRepository.save(new Carrito());
+    public CarritoResponseDTO guardar() {
+        Carrito carrito = carritoRepository.save(new Carrito());
+        return CarritoResponseDTO.from(carrito);
     }
 
-    public List<Carrito> listarTodos() {
-        return carritoRepository.findAllConProductos();
+    public List<CarritoResponseDTO> listarTodos() {
+        return carritoRepository.findAllConProductos().stream()
+            .map(CarritoResponseDTO::from)
+            .toList();
     }
 
-    public Carrito obtenerPorId(long id) {
-        return carritoRepository.findByIdConProductos(id)
+    public CarritoResponseDTO obtenerPorId(long id) {
+        Carrito carrito = carritoRepository.findByIdConProductos(id)
                 .orElseThrow(() -> new IllegalArgumentException("Carrito no encontrado con ID: " + id));
+        return CarritoResponseDTO.from(carrito);
     }
 
-    public Carrito agregarProducto(long carritoId, long productoId) {
+    public CarritoResponseDTO agregarProducto(long carritoId, long productoId) {
         return agregarProducto(carritoId, productoId, 1);
     }
 
-    public Carrito agregarProducto(long carritoId, long productoId, int cantidad) {
-        Carrito carrito = obtenerPorId(carritoId);
+    public CarritoResponseDTO agregarProducto(long carritoId, long productoId, int cantidad) {
+        Carrito carrito = carritoRepository.findByIdConProductos(carritoId)
+            .orElseThrow(() -> new IllegalArgumentException("Carrito no encontrado con ID: " + carritoId));
+
         Producto producto = productoRepository.findById(productoId)
                 .orElseThrow(() -> new ProductoNoEncontradoException("Producto no encontrado con ID: " + productoId));
 
         carrito.agregarProducto(producto, cantidad);
-        return carritoRepository.save(carrito);
+        Carrito guardado = carritoRepository.save(carrito);
+        return CarritoResponseDTO.from(guardado);
     }
 
     public void eliminarCarrito(long carritoId) {
@@ -56,22 +64,28 @@ public class CarritoService {
         carritoRepository.deleteById(carritoId);
     }
 
-    public Carrito eliminarProducto(long carritoId, long productoId) {
-        Carrito carrito = obtenerPorId(carritoId);
+    public CarritoResponseDTO eliminarProducto(long carritoId, long productoId) {
+        Carrito carrito = carritoRepository.findByIdConProductos(carritoId)
+            .orElseThrow(() -> new IllegalArgumentException("Carrito no encontrado con ID: " + carritoId));
+
         Producto producto = productoRepository.findById(productoId)
                 .orElseThrow(() -> new ProductoNoEncontradoException("Producto no encontrado con ID: " + productoId));
 
         carrito.eliminarProducto(producto);
-        return carritoRepository.save(carrito);
+        Carrito guardado = carritoRepository.save(carrito);
+        return CarritoResponseDTO.from(guardado);
     }
 
     public void vaciar(long carritoId) {
-        Carrito carrito = obtenerPorId(carritoId);
+        Carrito carrito = carritoRepository.findByIdConProductos(carritoId)
+            .orElseThrow(() -> new IllegalArgumentException("Carrito no encontrado con ID: " + carritoId));
         carrito.vaciar();
         carritoRepository.save(carrito);
     }
 
     public double calcularTotal(long carritoId) {
-        return obtenerPorId(carritoId).calcularTotal();
+        Carrito carrito = carritoRepository.findByIdConProductos(carritoId)
+            .orElseThrow(() -> new IllegalArgumentException("Carrito no encontrado con ID: " + carritoId));
+        return carrito.calcularTotal();
     }
 }

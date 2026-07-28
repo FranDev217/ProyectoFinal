@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ProyectoFinal.dto.CategoriaRequestDTO;
+import com.ProyectoFinal.dto.CategoriaResponseDTO;
 import com.ProyectoFinal.exception.CategoriaNoEncontradaException;
-import com.ProyectoFinal.model.Categoria;
+import com.ProyectoFinal.exception.CategoriaNombreInvalidoException;
 import com.ProyectoFinal.service.CategoriaService;
 
 import jakarta.validation.Valid;
@@ -31,15 +33,13 @@ public class CategoriaController {
         this.service = service;
     }
 
-    // GET /categorias — 200 OK con la lista.
     @GetMapping
-    public ResponseEntity<List<Categoria>> listarTodas() {
+    public ResponseEntity<List<CategoriaResponseDTO>> listarTodas() {
         return ResponseEntity.ok(service.listarTodos());
     }
 
-    // GET /categorias/{id} — 200 OK si existe, 404 si no.
     @GetMapping("/{id}")
-    public ResponseEntity<Categoria> obtenerCategoria(@PathVariable int id) {
+    public ResponseEntity<CategoriaResponseDTO> obtenerCategoria(@PathVariable long id) {
         try {
             return ResponseEntity.ok(service.obtenerPorId(id));
         } catch (CategoriaNoEncontradaException e) {
@@ -47,27 +47,29 @@ public class CategoriaController {
         }
     }
 
-    // POST /categorias — 201 Created si es válida, 400 si el nombre está vacío.
     @PostMapping
-    public ResponseEntity<Categoria> crearCategoria(@Valid @RequestBody Categoria nuevaCategoria) {
-        Categoria creada = service.guardar(nuevaCategoria);
-        return ResponseEntity.status(HttpStatus.CREATED).body(creada);
-
+    public ResponseEntity<CategoriaResponseDTO> crearCategoria(@Valid @RequestBody CategoriaRequestDTO nuevaCategoria) {
+        try {
+            CategoriaResponseDTO creada = service.guardar(nuevaCategoria);
+            return ResponseEntity.status(HttpStatus.CREATED).body(creada);
+        } catch (CategoriaNombreInvalidoException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
-    // PUT /categorias/{id} — 200 OK si existe, 404 si no, 400 si nombre vacío.
     @PutMapping("/{id}")
-    public ResponseEntity<Categoria> actualizar(@PathVariable int id, @Valid @RequestBody Categoria datos) {
+    public ResponseEntity<CategoriaResponseDTO> actualizar(@PathVariable long id, @Valid @RequestBody CategoriaRequestDTO datos) {
         try {
             return ResponseEntity.ok(service.actualizar(id, datos));
         } catch (CategoriaNoEncontradaException e) {
             return ResponseEntity.notFound().build();
+        } catch (CategoriaNombreInvalidoException e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 
-    // DELETE /categorias/{id} — 200 OK si existe, 404 si no.
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable int id) {
+    public ResponseEntity<Void> eliminar(@PathVariable long id) {
         try {
             service.eliminarPorId(id);
             return ResponseEntity.ok().build();
